@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestro Álbum - Momentos Especiales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-red: #570000;
+            --light-red: #fff5f5;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--light-red);
+        }
+
+        .foto-card {
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background-color: #fce8e8;
+            position: relative;
+        }
+
+        .foto-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 15px -3px rgba(87, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .foto-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overlay-card {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(87, 0, 0, 0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 1rem;
+        }
+
+        .foto-card:hover .overlay-card {
+            opacity: 1;
+        }
+
+        /* Modal Styles */
+        #modal-visor {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 2rem;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 1rem;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen p-6 md:p-12">
+
+    <!-- CABECERA -->
+    <header class="max-w-6xl mx-auto mb-10 flex items-center justify-between">
+        <a href="index.html" class="p-3 bg-white rounded-full shadow-md text-[#570000] hover:scale-110 transition-all border border-red-100">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="text-3xl md:text-4xl font-bold text-[#570000] italic tracking-tight">Nuestro Álbum ❤️</h1>
+        <div class="w-10"></div> <!-- Espaciador -->
+    </header>
+
+    <!-- CUADRÍCULA DE FOTOS -->
+    <main class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" id="galeria">
+        <!-- Las fotos se generarán dinámicamente -->
+    </main>
+
+    <!-- VISOR DE FOTO (MODAL) -->
+    <div id="modal-visor" onclick="cerrarModal()">
+        <button class="absolute top-6 right-6 text-white text-3xl hover:text-red-400">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <img id="img-grande" src="" alt="Foto completa" class="modal-content object-contain mb-6 border-4 border-white">
+        
+        <div class="bg-white p-6 rounded-2xl max-w-2xl w-full text-center shadow-2xl" onclick="event.stopPropagation()">
+            <h3 id="titulo-foto" class="text-xl font-bold text-[#570000] mb-2 uppercase tracking-widest">Momento #0</h3>
+            <p id="desc-foto" class="text-gray-700 leading-relaxed font-medium">Aquí va la descripción personalizada del momento.</p>
+        </div>
+    </div>
+<script>
+    const descripciones = [
+        "8/mayo/2023 first day bb",
+        "11/mayo/2023 me subiste a tu historia 😡",
+        "12/junio/2023 me vengue muajajajaja",
+        "23/junio/2023 lo recuerdas? nuestro primer hijo o hija nose",
+        "23/junio/2023 Te tire despues de eso perdon muajajaja",
+        "29/julio/2023 amo esta foto",
+        "29/julio/2023 te tire otra vez muajajaja",
+        "25/agosto/2023 y dices q no tienes la mano chica   (tea) ",
+        "25/agosto/2023 y te tire muajajajjjaja",
+        "9/septiembre/2023 A QUIEN MIRABAS O PQ T MUERDES EL LABIO",
+        "15/03/24 pq tengo esta foto jsjsjs",
+        "La amo",
+        "BESOOOOO",
+        "que linda t miras",
+        "31/octubre/2024 SJSJASJAHS amo esta foto",
+        "te miras muy lindaaap",
+        "dándole mi bendición",
+        "estabamos bebes",
+        "lo amo mucho",
+        "Vamosss (mog)",
+        "VIVA EL AMORRR",
+        "JUAN DESPACIO😢",
+        "PULSERITAS",
+        "recuerdas nuestra boda? el papa se estaba riendo de nosotros (ua)",
+        "Todo bien, VERDAD Q SI?",
+        "una artista❤️❤️",
+        "SAJHSAJSAHSJAHSJAHSAJHS amo esta foto",
+        "cuando ibamos los sabados q recuerdos",
+        "NUESTRO HIJOOOOOOOOOOO POBRECITO, se murio mucho (pa)",
+        "Hay que casarnos:c"
+    ];
+        const galeria = document.getElementById('galeria');
+        const modal = document.getElementById('modal-visor');
+        const imgGrande = document.getElementById('img-grande');
+        const tituloFoto = document.getElementById('titulo-foto');
+        const descFoto = document.getElementById('desc-foto');
+
+        // Generar las 30 fotos
+        for (let i = 1; i <= 30; i++) {
+            const nombreArchivo = `f${i}.png`; // Cambia a .jpg si tus fotos tienen esa extensión
+            const card = document.createElement('div');
+            card.className = 'foto-card';
+            card.onclick = () => abrirModal(i);
+
+            card.innerHTML = `
+                <img src="${nombreArchivo}" alt="Momento ${i}" class="foto-img z-10" 
+                     onerror="this.parentElement.style.opacity='0.5'">
+                <div class="overlay-card z-20">
+                    <span class="text-white font-bold text-xs uppercase tracking-tighter">Ver momento ${i}</span>
+                </div>
+            `;
+            galeria.appendChild(card);
+        }
+
+        function abrirModal(index) {
+            const nombreArchivo = `f${index}.png`;
+            imgGrande.src = nombreArchivo;
+            tituloFoto.innerText = `Momento #${index}`;
+            // Ajustamos el índice porque el array empieza en 0
+            descFoto.innerText = descripciones[index - 1] || "Un momento mágico a tu lado.";
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Bloquear scroll
+        }
+
+        function cerrarModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Habilitar scroll
+        }
+
+        // Cerrar con tecla Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") cerrarModal();
+        });
+    </script>
+</body>
+</html>
